@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.TextView;
 
 import jp.ac.meijou.android.s221205070.databinding.ActivityMainBinding;
@@ -13,30 +14,27 @@ import jp.ac.meijou.android.s221205070.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private  PrefDataStore prefDataStore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        prefDataStore = PrefDataStore.getInstance(this);
 
-        binding.editTextText2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // テキストが更新される直前に呼ばれる
-            }
+       binding.button.setOnClickListener(view -> {
+           var text = binding.editTextText2.getText().toString();
+           prefDataStore.setString("name", text);
+       } );
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // 文字を1つ入力された時に呼ばれる
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // テキストが更新されたあとに呼ばれる
-                binding.text.setText(editable.toString());
-            }
-        });
-
+        Log.d("Appmsg", "onCreate text: "+ binding.text.getText());
+    }
+    @Override
+    protected void onStart(){
+        super.onStart();
+        prefDataStore.getString("name")
+                .ifPresent(name -> binding.text.setText(name));
+        Log.d("Appmsg", "onStart text: "+ binding.text.getText());
 
     }
 }
